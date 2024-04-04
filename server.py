@@ -121,6 +121,42 @@ def after_request(response):
     response.headers["X-Request-Duration"] = str(duration)
     return response
 
+# --------------------------------------------------------------------------------
+# wav2lip 
+@app.route("/api/wav2lip/generate", methods=["GET","POST"]) 
+@app.route("/api/wav2lip/generate/<char_folder>", methods=["GET","POST"]) 
+@app.route("/api/wav2lip/generate/<char_folder>/<device>", methods=["GET","POST"]) 
+@app.route("/api/wav2lip/generate/<char_folder>/<device>/<audio>", methods=["GET","POST"]) 
+@app.route("/api/wav2lip/generate/<char_folder>/<device>/<audio>/<order>", methods=["GET","POST"]) 
+@app.route("/api/wav2lip/generate/<char_folder>/<device>/<audio>/<order>/<chunk>", methods=["GET","POST"]) 
+@app.route("/api/wav2lip/generate/<char_folder>/<device>/<audio>/<order>/<chunk>/<reply_part>", methods=["GET","POST"])
+#@cross_origin(headers=['Content-Type'])
+def wav2lip_generate(char_folder="default",device="cpu",audio="test",order="rand", chunk=0, reply_part=0):
+    print(str(time.time())+" in wav2lip gen server chunk:"+str(chunk)+"_"+str(reply_part))
+    return wav2lip_server_generate(char_folder, device, audio, order, chunk, reply_part)
+
+@app.route("/api/wav2lip/start_player", methods=["GET","POST"]) 
+#@cross_origin(headers=['Content-Type'])
+def play_init():
+    return wav2lip_server_play_init()
+    
+@app.route("/api/wav2lip/play/<char_folder>/<fname>", methods=["GET","POST"]) 
+#@cross_origin(headers=['Content-Type'])
+def wav2lip_play(fname: str, char_folder: str): 
+    return wav2lip_server_play(fname, char_folder)
+    
+@app.route("/api/wav2lip/silero_set_lang/<fname>", methods=["GET","POST"]) 
+#@cross_origin(headers=['Content-Type'])
+def wav2lip_silero_set_lang(fname: str):  
+    return wav2lip_server_silero_set_lang(tts_service, fname)
+
+@app.route("/api/wav2lip/get_chars", methods=["GET","POST"]) 
+#@cross_origin(headers=['Content-Type'])
+def wav2lip_get_chars():  
+    return wav2lip_server_get_chars()         
+# --------------------------------------------------------------------------------
+
+
 @app.route("/", methods=["GET"])
 def index():
     with open("./README.md", "r", encoding="utf8") as f:
@@ -862,44 +898,6 @@ def api_websearch():
 
     return jsonify({"results": results[0], "links": results[1]})
 
-# --------------------------------------------------------------------------------
-# wav2lip 
-@app.route("/api/wav2lip/generate", methods=["GET","POST"]) 
-@app.route("/api/wav2lip/generate/<char_folder>", methods=["GET","POST"]) 
-@app.route("/api/wav2lip/generate/<char_folder>/<device>", methods=["GET","POST"]) 
-@app.route("/api/wav2lip/generate/<char_folder>/<device>/<audio>", methods=["GET","POST"]) 
-@app.route("/api/wav2lip/generate/<char_folder>/<device>/<audio>/<order>", methods=["GET","POST"]) 
-@app.route("/api/wav2lip/generate/<char_folder>/<device>/<audio>/<order>/<chunk>", methods=["GET","POST"]) 
-@app.route("/api/wav2lip/generate/<char_folder>/<device>/<audio>/<order>/<chunk>/<reply_part>", methods=["GET","POST"])
-#@cross_origin(headers=['Content-Type'])
-@require_module("wav2lip")
-def wav2lip_generate(char_folder="default",device="cpu",audio="test",order="rand", chunk=0, reply_part=0):
-    print("in server chunk:"+str(chunk)+"_"+str(reply_part))
-    return wav2lip_server_generate(char_folder, device, audio, order, chunk, reply_part)
-
-@app.route("/api/wav2lip/start_player", methods=["GET","POST"]) 
-#@cross_origin(headers=['Content-Type'])
-@require_module("wav2lip")
-def play_init():
-    return wav2lip_server_play_init()
-    
-@app.route("/api/wav2lip/play/<char_folder>/<fname>", methods=["GET","POST"]) 
-#@cross_origin(headers=['Content-Type'])
-@require_module("wav2lip")
-def wav2lip_play(fname: str, char_folder: str): 
-    return wav2lip_server_play(fname, char_folder)
-    
-@app.route("/api/wav2lip/silero_set_lang/<fname>", methods=["GET","POST"]) 
-#@cross_origin(headers=['Content-Type'])
-@require_module("wav2lip")
-def wav2lip_silero_set_lang(fname: str):  
-    return wav2lip_server_silero_set_lang(tts_service, fname)
-
-@app.route("/api/wav2lip/get_chars", methods=["GET","POST"]) 
-#@cross_origin(headers=['Content-Type'])
-@require_module("wav2lip")
-def wav2lip_get_chars():  
-    return wav2lip_server_get_chars()         
 # --------------------------------------------------------------------------------
 # Main program
 
