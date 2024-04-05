@@ -14,6 +14,7 @@ import sys
 import time
 from typing import List, Union
 import unicodedata
+import threading
 
 from colorama import Fore, Style, init as colorama_init
 import markdown
@@ -1269,7 +1270,12 @@ if "coqui-tts" in modules:
 
 if "wav2lip" in modules:
     sys.path.append("modules/wav2lip/")
-    from server_wav2lip import *
+    from server_wav2lip import *    
+    wav2lip_server_generate_dummy() # download checkpoint if needed, make face-detect for newly added video if needed
+    thr = threading.Thread(target=wav2lip_server_play_init, args=[], kwargs={}) # player-loop in a new thead
+    thr.start()
+    
+    
     
 # Read an API key from an already existing file. If that file doesn't exist, create it.
 if args.secure:
