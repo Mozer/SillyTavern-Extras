@@ -26,5 +26,3 @@ selenium
 huggingface-hub
 fastapi
 wxpython; sys_platform == 'win32' or sys_platform == 'darwin'
-tts @ git+https://github.com/Mozer/TTS
-xtts-api-server @ git+https://github.com/Mozer/xtts-api-server
